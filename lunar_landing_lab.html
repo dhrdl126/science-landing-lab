@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07162c">
+  <title>달 기지 착륙 안전 연구소</title>
+  <style>
+    :root {
+      --bg: #07162c;
+      --panel: #10233f;
+      --panel-2: #152b4b;
+      --line: #2b496d;
+      --text: #f5f8ff;
+      --muted: #a8b8cf;
+      --cyan: #42d7e8;
+      --cyan-2: #1ba9c4;
+      --gold: #f2bb4b;
+      --green: #42d392;
+      --red: #ff6b6b;
+      --purple: #a78bfa;
+      --radius: 18px;
+      --shadow: 0 18px 45px rgba(0, 0, 0, .26);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 80% -10%, rgba(66, 215, 232, .13), transparent 30%),
+        radial-gradient(circle at 10% 20%, rgba(167, 139, 250, .10), transparent 27%),
+        var(--bg);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, -apple-system, sans-serif;
+      letter-spacing: -.02em;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(66, 215, 232, .75);
+      outline-offset: 2px;
+    }
+
+    .app { width: min(1800px, 100%); margin: 0 auto; padding: 18px; }
+    .topbar {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 14px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .brand-mark {
+      width: 48px; height: 48px; flex: 0 0 48px;
+      display: grid; place-items: center;
+      border: 1px solid rgba(66, 215, 232, .38);
+      border-radius: 15px;
+      background: linear-gradient(145deg, rgba(66,215,232,.23), rgba(66,215,232,.04));
+      box-shadow: inset 0 0 20px rgba(66,215,232,.08);
+      font-size: 27px;
+    }
+    .brand h1 { margin: 0; font-size: clamp(19px, 2vw, 29px); line-height: 1.15; }
+    .brand p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .top-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: rgba(17, 38, 67, .88);
+      cursor: pointer;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: #4f759f; background: #183253; }
+    .btn.primary { border: 0; color: #04111f; background: linear-gradient(135deg, #67e4ef, #2bc3d7); }
+    .btn.gold { border: 0; color: #241800; background: linear-gradient(135deg, #ffd777, #f2b640); }
+    .btn.ghost { background: transparent; }
+    .btn.small { padding: 7px 10px; font-size: 12px; border-radius: 9px; }
+
+    .mission-bar {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.3fr) repeat(3, minmax(150px, .65fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .mission-intro, .mission-card {
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(16, 35, 63, .84);
+      box-shadow: 0 9px 25px rgba(0,0,0,.12);
+    }
+    .mission-intro { padding: 13px 16px; display: flex; align-items: center; gap: 12px; }
+    .mission-intro .step { color: var(--cyan); font-size: 11px; font-weight: 900; letter-spacing: .08em; }
+    .mission-intro strong { display: block; margin-top: 3px; font-size: 15px; }
+    .progress-ring {
+      width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: conic-gradient(var(--cyan) calc(var(--progress, 0) * 1%), #203858 0);
+      position: relative; font-size: 12px; font-weight: 900;
+    }
+    .progress-ring::after { content: ""; position: absolute; inset: 5px; border-radius: 50%; background: var(--panel); }
+    .progress-ring span { position: relative; z-index: 1; }
+    .mission-card {
+      text-align: left; color: var(--text); padding: 12px 13px; cursor: pointer; position: relative;
+      transition: transform .16s ease, border-color .16s ease;
+    }
+    .mission-card:hover { transform: translateY(-2px); border-color: #4c739d; }
+    .mission-card.active { border-color: var(--gold); box-shadow: inset 0 0 0 1px rgba(242,187,75,.25); }
+    .mission-card.completed::after {
+      content: "✓"; position: absolute; right: 9px; top: 9px; width: 22px; height: 22px;
+      display: grid; place-items: center; border-radius: 50%; background: var(--green); color: #062317; font-weight: 1000;
+    }
+    .mission-no { color: var(--gold); font-size: 10px; font-weight: 900; letter-spacing: .08em; }
+    .mission-card strong { display: block; margin-top: 5px; font-size: 14px; padding-right: 20px; }
+    .mission-card small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(255px, 310px) minmax(520px, 1.35fr) minmax(310px, 390px);
+      gap: 14px;
+      align-items: start;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(20, 43, 75, .96), rgba(12, 29, 53, .98));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .panel-head {
+      min-height: 52px; padding: 13px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(6, 20, 40, .32);
+    }
+    .panel-head h2 { margin: 0; font-size: 15px; }
+    .eyebrow { color: var(--cyan); font-size: 10px; font-weight: 950; letter-spacing: .1em; }
+    .controls-body { padding: 14px; }
+
+    .control-group { margin-bottom: 17px; }
+    .control-label { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .control-label label { color: #dbe7f8; font-size: 12px; font-weight: 800; }
+    .value { color: var(--cyan); font-variant-numeric: tabular-nums; font-size: 14px; font-weight: 900; }
+    input[type="range"] {
+      width: 100%; height: 6px; border-radius: 999px; outline: none; appearance: none;
+      background: linear-gradient(90deg, var(--cyan) var(--fill, 50%), #294568 var(--fill, 50%));
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #eaffff;
+      border: 4px solid var(--cyan-2); box-shadow: 0 0 0 3px rgba(66,215,232,.13); cursor: grab;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 11px; height: 11px; border-radius: 50%; background: #eaffff;
+      border: 4px solid var(--cyan-2); cursor: grab;
+    }
+    .range-ends { display: flex; justify-content: space-between; margin-top: 5px; color: #7890ae; font-size: 9px; }
+
+    .planet-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .planet-btn {
+      border: 1px solid var(--line); border-radius: 11px; padding: 9px 3px; background: #0e2340; cursor: pointer;
+      color: var(--muted); font-size: 11px; font-weight: 800; transition: .16s ease;
+    }
+    .planet-btn span { display: block; font-size: 20px; margin-bottom: 4px; }
+    .planet-btn.active { color: #fff; border-color: var(--cyan); background: rgba(66,215,232,.13); }
+
+    .system-select { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .system-option {
+      min-height: 57px; padding: 8px; text-align: left; border: 1px solid var(--line); border-radius: 11px;
+      background: #0e2340; color: var(--text); cursor: pointer; position: relative;
+    }
+    .system-option.active { border-color: var(--gold); background: rgba(242,187,75,.10); }
+    .system-option strong { display: block; font-size: 11px; }
+    .system-option small { color: var(--muted); font-size: 9px; }
+    .system-option em { position: absolute; right: 7px; top: 6px; color: var(--gold); font-size: 9px; font-style: normal; }
+
+    .hypothesis {
+      padding: 11px; margin: 4px 0 13px; border: 1px dashed #416589; border-radius: 12px; background: rgba(5,20,39,.38);
+    }
+    .hypothesis p { margin: 0 0 8px; font-size: 11px; line-height: 1.45; color: #d9e4f3; }
+    .choice-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+    .choice {
+      border: 1px solid #355777; border-radius: 8px; background: #112a49; padding: 6px 3px; color: var(--muted);
+      font-size: 10px; font-weight: 800; cursor: pointer;
+    }
+    .choice.active { color: #07162c; border-color: var(--gold); background: var(--gold); }
+    .launch-button {
+      width: 100%; min-height: 50px; border: 0; border-radius: 13px; cursor: pointer;
+      color: #061522; font-weight: 1000; font-size: 15px;
+      background: linear-gradient(135deg, #79eaf2, #2bc3d7);
+      box-shadow: 0 8px 24px rgba(43,195,215,.22);
+      transition: transform .15s ease, filter .15s ease;
+    }
+    .launch-button:hover { transform: translateY(-2px); filter: brightness(1.07); }
+    .launch-button:disabled { opacity: .55; cursor: wait; transform: none; }
+
+    .sim-panel { min-width: 0; }
+    .sim-toolbar { display: flex; align-items: center; gap: 7px; }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #55708e; }
+    .live-dot.running { background: var(--green); box-shadow: 0 0 0 5px rgba(66,211,146,.13); animation: pulse 1s infinite; }
+    @keyframes pulse { 50% { opacity: .55; } }
+    .simulation-wrap { position: relative; aspect-ratio: 16 / 8.6; min-height: 380px; background: #050f22; }
+    #simCanvas { width: 100%; height: 100%; display: block; }
+    .telemetry {
+      position: absolute; left: 13px; top: 13px; display: grid; grid-template-columns: repeat(2, minmax(90px, 1fr)); gap: 7px;
+      pointer-events: none;
+    }
+    .telemetry-item {
+      min-width: 100px; padding: 8px 10px; border: 1px solid rgba(87,130,170,.46); border-radius: 10px;
+      background: rgba(5, 18, 37, .78); backdrop-filter: blur(8px);
+    }
+    .telemetry-item small { display: block; color: #8fa8c5; font-size: 9px; }
+    .telemetry-item strong { display: block; margin-top: 2px; color: #fff; font-size: 15px; font-variant-numeric: tabular-nums; }
+    .scene-badge {
+      position: absolute; right: 13px; top: 13px; padding: 7px 10px; border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px; background: rgba(5,18,37,.7); font-size: 10px; color: #dbe8f8; pointer-events: none;
+    }
+    .result-banner {
+      min-height: 58px; padding: 12px 15px; border-top: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #0d213b;
+    }
+    .result-banner .result-main { display: flex; align-items: center; gap: 10px; }
+    .result-icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: #243d5e; }
+    .result-banner h3 { margin: 0; font-size: 14px; }
+    .result-banner p { margin: 3px 0 0; color: var(--muted); font-size: 10px; }
+    .result-banner.safe .result-icon { color: #042216; background: var(--green); }
+    .result-banner.warning .result-icon { color: #2b1d02; background: var(--gold); }
+    .result-banner.danger .result-icon { color: #2b0808; background: var(--red); }
+    .result-banner.ready .result-icon { color: #061522; background: var(--cyan); }
+    .mission-score { text-align: right; white-space: nowrap; }
+    .mission-score small { display: block; color: var(--muted); font-size: 9px; }
+    .mission-score strong { color: var(--gold); font-size: 19px; }
+
+    .analysis-tabs { display: flex; border-bottom: 1px solid var(--line); }
+    .tab-btn {
+      flex: 1; border: 0; background: #0d213b; color: var(--muted); padding: 11px 5px; cursor: pointer;
+      font-size: 11px; font-weight: 850; border-bottom: 2px solid transparent;
+    }
+    .tab-btn.active { color: var(--cyan); border-bottom-color: var(--cyan); background: #122a49; }
+    .tab-page { display: none; padding: 13px; min-height: 545px; }
+    .tab-page.active { display: block; }
+    .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .metric-card { padding: 11px; border: 1px solid var(--line); border-radius: 12px; background: #0d223f; }
+    .metric-card small { display: block; color: var(--muted); font-size: 9px; }
+    .metric-card strong { display: block; margin-top: 4px; font-size: 18px; font-variant-numeric: tabular-nums; }
+    .metric-card strong.cyan { color: var(--cyan); }
+    .metric-card strong.gold { color: var(--gold); }
+    .metric-card strong.red { color: var(--red); }
+
+    .chart-card { margin-top: 9px; border: 1px solid var(--line); border-radius: 12px; background: #091d37; overflow: hidden; }
+    .chart-head { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid #203d5e; }
+    .chart-head strong { font-size: 10px; }
+    .chart-head span { color: var(--muted); font-size: 9px; }
+    .chart-canvas { width: 100%; height: 122px; display: block; }
+
+    .explanation { margin-top: 9px; padding: 11px; border-left: 3px solid var(--cyan); border-radius: 8px; background: rgba(66,215,232,.07); }
+    .explanation strong { display: block; font-size: 11px; }
+    .explanation p { margin: 6px 0 0; color: #c5d4e7; font-size: 10px; line-height: 1.55; }
+    .formula { margin-top: 8px; padding: 8px 9px; border-radius: 8px; background: #071a31; color: #d9faff; font: 700 10px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    .mission-detail { border: 1px solid #715e35; border-radius: 13px; background: rgba(242,187,75,.08); padding: 13px; }
+    .mission-detail .mission-label { color: var(--gold); font-size: 10px; font-weight: 950; }
+    .mission-detail h3 { margin: 5px 0 7px; font-size: 16px; }
+    .mission-detail p { margin: 0; color: #cfdaea; font-size: 11px; line-height: 1.55; }
+    .criteria { margin: 12px 0 0; padding: 0; list-style: none; }
+    .criteria li { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0; border-bottom: 1px dashed #35516f; font-size: 10px; }
+    .criteria li::before { content: "○"; color: var(--muted); font-weight: 900; }
+    .criteria li.ok::before { content: "●"; color: var(--green); }
+    .criteria li.fail::before { content: "●"; color: var(--red); }
+    .mission-tip { margin-top: 10px; color: var(--muted); font-size: 10px; line-height: 1.55; }
+
+    .record-empty { padding: 70px 10px; text-align: center; color: var(--muted); font-size: 11px; line-height: 1.6; }
+    .records { display: grid; gap: 7px; }
+    .record {
+      width: 100%; text-align: left; color: var(--text); border: 1px solid var(--line); border-radius: 11px; background: #0c213d;
+      padding: 9px; cursor: pointer;
+    }
+    .record:hover { border-color: #4b759f; }
+    .record-top { display: flex; justify-content: space-between; gap: 6px; font-size: 10px; }
+    .record-top span:last-child { color: var(--green); font-weight: 900; }
+    .record.danger .record-top span:last-child { color: var(--red); }
+    .record.warning .record-top span:last-child { color: var(--gold); }
+    .record-data { margin-top: 5px; color: var(--muted); font-size: 9px; line-height: 1.5; }
+    .compare-note { margin-top: 11px; padding: 10px; border-radius: 10px; background: rgba(167,139,250,.10); color: #ddd5ff; font-size: 10px; line-height: 1.55; }
+
+    .bottom-dock {
+      margin-top: 14px; display: grid; grid-template-columns: 1.3fr .8fr; gap: 14px;
+    }
+    .inquiry-strip { padding: 13px 16px; display: flex; align-items: center; gap: 12px; }
+    .inquiry-strip strong { font-size: 11px; white-space: nowrap; }
+    .inquiry-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; flex: 1; }
+    .inquiry-step { padding: 8px 5px; text-align: center; border: 1px solid var(--line); border-radius: 9px; color: var(--muted); font-size: 9px; }
+    .inquiry-step.done { color: #041d14; border-color: var(--green); background: var(--green); font-weight: 900; }
+    .standard-strip { padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .standard-strip span { color: var(--muted); font-size: 10px; line-height: 1.45; }
+    .standard-strip strong { color: var(--gold); }
+
+    dialog {
+      width: min(760px, calc(100% - 28px)); max-height: 86vh; padding: 0; color: var(--text);
+      border: 1px solid #42668b; border-radius: 20px; background: #0d213b; box-shadow: 0 30px 90px #000;
+    }
+    dialog::backdrop { background: rgba(2, 9, 20, .78); backdrop-filter: blur(5px); }
+    .dialog-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 19px; border-bottom: 1px solid var(--line); }
+    .dialog-head h2 { margin: 0; font-size: 17px; }
+    .dialog-body { padding: 18px 20px 22px; overflow: auto; max-height: calc(86vh - 65px); }
+    .standard-box { margin-bottom: 10px; padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: #112947; }
+    .standard-box strong { color: var(--cyan); font-size: 11px; }
+    .standard-box p { margin: 6px 0 0; color: #d1dceb; font-size: 11px; line-height: 1.65; }
+    .teacher-list { color: #c6d4e5; font-size: 11px; line-height: 1.7; padding-left: 20px; }
+    .teacher-list li + li { margin-top: 6px; }
+    .model-note { padding: 11px; border-radius: 10px; background: rgba(255,107,107,.09); color: #ffd3d3; font-size: 10px; line-height: 1.55; }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); z-index: 30;
+      max-width: calc(100% - 30px); padding: 11px 15px; border: 1px solid #4c759f; border-radius: 11px;
+      background: #132c4c; color: #fff; box-shadow: 0 15px 40px rgba(0,0,0,.4); font-size: 11px;
+      opacity: 0; pointer-events: none; transition: .22s ease;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 1250px) {
+      .workspace { grid-template-columns: 270px minmax(500px, 1fr); }
+      .analysis-panel { grid-column: 1 / -1; }
+      .tab-page { min-height: 0; }
+      #dataPage.active { display: grid; grid-template-columns: .9fr 1.1fr; gap: 12px; }
+    }
+    @media (max-width: 860px) {
+      .app { padding: 10px; }
+      .topbar { align-items: flex-start; }
+      .brand p { display: none; }
+      .top-actions .btn span { display: none; }
+      .mission-bar { grid-template-columns: 1fr 1fr 1fr; }
+      .mission-intro { grid-column: 1 / -1; }
+      .workspace { grid-template-columns: 1fr; }
+      .sim-panel { grid-row: 1; }
+      .controls-panel { grid-row: 2; }
+      .analysis-panel { grid-row: 3; grid-column: auto; }
+      .simulation-wrap { min-height: 330px; }
+      .controls-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+      .hypothesis, .launch-button { grid-column: 1 / -1; }
+      .bottom-dock { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .brand-mark { width: 40px; height: 40px; flex-basis: 40px; }
+      .top-actions .btn { padding: 9px; }
+      .mission-bar { grid-template-columns: 1fr; }
+      .mission-intro, .mission-card { grid-column: auto; }
+      .mission-card small { display: none; }
+      .controls-body { display: block; }
+      .telemetry { grid-template-columns: 1fr; }
+      .telemetry-item:nth-child(n+3) { display: none; }
+      .simulation-wrap { min-height: 300px; aspect-ratio: auto; height: 58vh; max-height: 450px; }
+      .result-banner { align-items: flex-start; }
+      .metric-grid { grid-template-columns: 1fr 1fr; }
+      #dataPage.active { display: block; }
+      .inquiry-strip { align-items: flex-start; flex-direction: column; }
+      .inquiry-steps { width: 100%; }
+      .inquiry-step { font-size: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">🚀</div>
+        <div>
+          <h1>달 기지 착륙 안전 연구소</h1>
+          <p>중력과 충격을 제어하여 보급선을 안전하게 착륙시키세요.</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn ghost" id="teacherBtn" type="button">🎓 <span>교사용 안내</span></button>
+        <button class="btn ghost" id="fullscreenBtn" type="button">⛶ <span>전체 화면</span></button>
+        <button class="btn" id="resetBtn" type="button">↻ <span>초기화</span></button>
+      </div>
+    </header>
+
+    <section class="mission-bar" aria-label="연구 미션">
+      <div class="mission-intro">
+        <div class="progress-ring" id="progressRing" style="--progress:0"><span id="progressText">0/3</span></div>
+        <div><span class="step">MISSION CONTROL</span><strong id="missionSummary">미션을 선택하거나 자유 탐구를 시작하세요.</strong></div>
+      </div>
+      <button class="mission-card" type="button" data-mission="1">
+        <span class="mission-no">MISSION 01</span><strong>달걀 화물을 지켜라</strong><small>충돌 시간과 충격력</small>
+      </button>
+      <button class="mission-card" type="button" data-mission="2">
+        <span class="mission-no">MISSION 02</span><strong>달 기지 긴급 보급</strong><small>예산 안에서 안전 설계</small>
+      </button>
+      <button class="mission-card" type="button" data-mission="3">
+        <span class="mission-no">MISSION 03</span><strong>화성 최종 도전</strong><small>역추진 착륙 시스템</small>
+      </button>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel controls-panel">
+        <div class="panel-head">
+          <div><div class="eyebrow">VARIABLE CONTROL</div><h2>독립 변인 조작</h2></div>
+          <button class="btn small ghost" id="randomBtn" type="button">무작위</button>
+        </div>
+        <div class="controls-body">
+          <div class="control-group">
+            <div class="control-label"><label>천체와 중력가속도</label><span class="value" id="gravityValue">9.81 m/s²</span></div>
+            <div class="planet-options" role="group" aria-label="천체 선택">
+              <button class="planet-btn active" type="button" data-planet="earth"><span>🌍</span>지구</button>
+              <button class="planet-btn" type="button" data-planet="moon"><span>🌕</span>달</button>
+              <button class="planet-btn" type="button" data-planet="mars"><span>🔴</span>화성</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label"><label for="heightRange">낙하 높이</label><span class="value" id="heightValue">20 m</span></div>
+            <input id="heightRange" type="range" min="5" max="100" step="5" value="20">
+            <div class="range-ends"><span>5 m</span><span>100 m</span></div>
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label for="massRange">화물 포함 질량</label><span class="value" id="massValue">400 kg</span></div>
+            <input id="massRange" type="range" min="100" max="1200" step="50" value="400">
+            <div class="range-ends"><span>100 kg</span><span>1,200 kg</span></div>
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label for="vxRange">초기 수평 속력</label><span class="value" id="vxValue">0 m/s</span></div>
+            <input id="vxRange" type="range" min="0" max="20" step="1" value="0">
+            <div class="range-ends"><span>수직 낙하</span><span>20 m/s</span></div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label"><label>착륙 안전장치</label><span class="value" id="systemValue">₩0</span></div>
+            <div class="system-select" role="group" aria-label="착륙 안전장치 선택">
+              <button class="system-option active" type="button" data-system="rigid"><strong>🧱 강체 착륙판</strong><small>정지 0.06초</small><em>₩0</em></button>
+              <button class="system-option" type="button" data-system="airbag"><strong>🫧 에어백</strong><small>정지 0.45초</small><em>₩250</em></button>
+              <button class="system-option" type="button" data-system="spring"><strong>🌀 벌집 완충재</strong><small>정지 0.75초</small><em>₩400</em></button>
+              <button class="system-option" type="button" data-system="retro"><strong>🔥 역추진 엔진</strong><small>속력 65% 감소</small><em>₩650</em></button>
+            </div>
+          </div>
+
+          <div class="hypothesis">
+            <p><strong>먼저 예상하기</strong><br>같은 운동량 변화에서 멈추는 시간이 길어지면 평균 충격력은?</p>
+            <div class="choice-row">
+              <button class="choice" type="button" data-choice="up">증가</button>
+              <button class="choice" type="button" data-choice="same">일정</button>
+              <button class="choice" type="button" data-choice="down">감소</button>
+            </div>
+          </div>
+          <button class="launch-button" id="launchBtn" type="button">▶ 착륙 실험 시작</button>
+        </div>
+      </aside>
+
+      <section class="panel sim-panel">
+        <div class="panel-head">
+          <div><div class="eyebrow">LIVE SIMULATION</div><h2>가상 낙하 실험</h2></div>
+          <div class="sim-toolbar"><span class="live-dot" id="liveDot"></span><span id="simState" style="font-size:10px;color:var(--muted)">대기 중</span></div>
+        </div>
+        <div class="simulation-wrap" id="simulationWrap">
+          <canvas id="simCanvas" aria-label="탐사선 낙하 운동 시뮬레이션"></canvas>
+          <div class="telemetry" aria-live="polite">
+            <div class="telemetry-item"><small>현재 높이</small><strong id="liveHeight">20.0 m</strong></div>
+            <div class="telemetry-item"><small>현재 속력</small><strong id="liveSpeed">0.0 m/s</strong></div>
+            <div class="telemetry-item"><small>경과 시간</small><strong id="liveTime">0.00 s</strong></div>
+            <div class="telemetry-item"><small>수평 이동</small><strong id="liveX">0.0 m</strong></div>
+          </div>
+          <div class="scene-badge" id="sceneBadge">🌍 지구 · g = 9.81 m/s²</div>
+        </div>
+        <div class="result-banner ready" id="resultBanner">
+          <div class="result-main"><div class="result-icon" id="resultIcon">⌁</div><div><h3 id="resultTitle">실험 준비 완료</h3><p id="resultSubtitle">가설을 정하고 변수를 조작한 뒤 실험을 시작하세요.</p></div></div>
+          <div class="mission-score"><small>설계 점수</small><strong id="scoreValue">—</strong></div>
+        </div>
+      </section>
+
+      <aside class="panel analysis-panel">
+        <div class="analysis-tabs" role="tablist">
+          <button class="tab-btn active" type="button" role="tab" data-tab="dataPage">측정·분석</button>
+          <button class="tab-btn" type="button" role="tab" data-tab="missionPage">현재 미션</button>
+          <button class="tab-btn" type="button" role="tab" data-tab="recordPage">실험 기록</button>
+        </div>
+
+        <div class="tab-page active" id="dataPage" role="tabpanel">
+          <div>
+            <div class="metric-grid">
+              <div class="metric-card"><small>낙하 시간</small><strong class="cyan" id="fallTimeMetric">—</strong></div>
+              <div class="metric-card"><small>충돌 직전 속력</small><strong class="cyan" id="impactSpeedMetric">—</strong></div>
+              <div class="metric-card"><small>충돌 운동량</small><strong class="gold" id="momentumMetric">—</strong></div>
+              <div class="metric-card"><small>추정 최대 충격력</small><strong class="red" id="forceMetric">—</strong></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-head"><strong>시간–속력 그래프</strong><span>기울기 = 가속도</span></div>
+              <canvas class="chart-canvas" id="speedChart"></canvas>
+            </div>
+            <div class="chart-card">
+              <div class="chart-head"><strong>시간–힘 그래프</strong><span>넓이 = 충격량</span></div>
+              <canvas class="chart-canvas" id="forceChart"></canvas>
+            </div>
+          </div>
+          <div class="explanation">
+            <strong id="claimTitle">실험 후 과학적 설명이 표시됩니다.</strong>
+            <p id="claimText">조작한 변인과 측정 결과를 연결하여 주장을 완성해 보세요.</p>
+            <div class="formula" id="formulaBox">v = √(2gh)<br>FΔt = Δp</div>
+          </div>
+        </div>
+
+        <div class="tab-page" id="missionPage" role="tabpanel">
+          <div class="mission-detail">
+            <span class="mission-label" id="missionLabel">FREE LAB</span>
+            <h3 id="missionTitle">자유 탐구 모드</h3>
+            <p id="missionDescription">변인을 하나씩 바꾸면서 낙하 운동과 충격력의 변화를 관찰하세요.</p>
+          </div>
+          <ul class="criteria" id="criteriaList">
+            <li>가설을 먼저 선택한다.</li>
+            <li>변인을 조작하고 착륙 실험을 실행한다.</li>
+            <li>측정값과 그래프를 근거로 결과를 설명한다.</li>
+          </ul>
+          <p class="mission-tip" id="missionTip">💡 동일한 조건에서 질량만 바꾸면 무엇이 같고 무엇이 달라질까요?</p>
+        </div>
+
+        <div class="tab-page" id="recordPage" role="tabpanel">
+          <div id="recordContainer" class="record-empty">아직 저장된 실험이 없습니다.<br>실험을 실행하면 최근 결과 6개가 자동 기록됩니다.</div>
+          <div class="compare-note" id="compareNote" hidden>두 실험을 비교하려면 기록을 차례로 선택하세요.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="bottom-dock">
+      <div class="panel inquiry-strip">
+        <strong>과학 탐구 과정</strong>
+        <div class="inquiry-steps">
+          <div class="inquiry-step done" data-step="question">문제 인식</div>
+          <div class="inquiry-step" data-step="hypothesis">가설 설정</div>
+          <div class="inquiry-step" data-step="control">변인 통제</div>
+          <div class="inquiry-step" data-step="measure">측정·분석</div>
+          <div class="inquiry-step" data-step="explain">결론 도출</div>
+        </div>
+      </div>
+      <div class="panel standard-strip">
+        <span><strong>2022 통합과학1</strong><br>[10통과1-03-03] · [10통과1-03-04]</span>
+        <button class="btn small" id="standardBtn" type="button">성취기준 보기</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="teacherDialog">
+    <div class="dialog-head"><h2>교사용 수업 설계 안내</h2><button class="btn small" id="closeDialogBtn" type="button">닫기</button></div>
+    <div class="dialog-body">
+      <div class="standard-box"><strong>[10통과1-03-03]</strong><p>중력의 작용으로 인한 지구 표면과 지구 주위의 다양한 운동을 설명할 수 있다.</p></div>
+      <div class="standard-box"><strong>[10통과1-03-04]</strong><p>상호작용이 없을 때 물체가 가속되지 않음을 알고, 충격량과 운동량의 관계를 충돌 관련 안전장치와 스포츠에 적용할 수 있다.</p></div>
+      <h3 style="font-size:14px;margin-top:20px">권장 수업 흐름</h3>
+      <ol class="teacher-list">
+        <li><b>예상:</b> 완충 시간이 길어지면 충격력이 어떻게 달라질지 가설을 고릅니다.</li>
+        <li><b>변인 통제:</b> 한 번에 한 변인만 바꾸도록 안내하고, 실험 기록에서 전후 결과를 비교합니다.</li>
+        <li><b>자료 해석:</b> 시간–속력 그래프의 기울기와 시간–힘 그래프의 넓이를 읽습니다.</li>
+        <li><b>설계:</b> 추정 최대 충격력과 예산 조건을 동시에 만족하는 착륙 장치를 고릅니다.</li>
+        <li><b>논증:</b> ‘주장–증거–과학적 원리’ 형식으로 안전 설계의 이유를 말하게 합니다.</li>
+      </ol>
+      <div class="model-note"><b>모형의 한계:</b> 이 시뮬레이션은 중력가속도가 일정하고 공기 저항이 없다고 가정합니다. 평균 충격력은 Δp/Δt로 계산하고, 장치별 힘–시간 곡선의 모양을 가정하여 최대값을 추정합니다. 따라서 화면의 ‘추정 최대 충격력’은 실제 장치의 정확한 최대 힘이 아닙니다. 실제 우주선 설계에는 자세 제어, 연료 질량 변화, 대기와 지형 등 더 많은 변인이 필요합니다.</div>
+    </div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const PLANETS = {
+        earth: { name: '지구', icon: '🌍', g: 9.81, sky: ['#06162e', '#153b68'], ground: ['#395a39', '#183a2b'], accent: '#64c8ff' },
+        moon:  { name: '달', icon: '🌕', g: 1.62, sky: ['#030a17', '#172238'], ground: ['#87868a', '#4b4d55'], accent: '#f5df9b' },
+        mars:  { name: '화성', icon: '🔴', g: 3.71, sky: ['#250d12', '#7b3026'], ground: ['#a64d35', '#5b291f'], accent: '#ff9c70' }
+      };
+      const SYSTEMS = {
+        rigid:  { name: '강체 착륙판', stop: .06, cost: 0,   speedFactor: 1,    peakFactor: 1.75 },
+        airbag: { name: '에어백',       stop: .45, cost: 250, speedFactor: 1,    peakFactor: 1.45 },
+        spring: { name: '벌집 완충재',  stop: .75, cost: 400, speedFactor: 1,    peakFactor: 1.25 },
+        retro:  { name: '역추진 엔진',  stop: .35, cost: 650, speedFactor: .35,  peakFactor: 1.30 }
+      };
+      const MISSIONS = {
+        1: {
+          title: '달걀 화물을 지켜라', label: 'MISSION 01 · 지구 시험장',
+          description: '400 kg 시험선을 20 m 높이에서 낙하시킵니다. 추정 최대 충격력을 35 kN 이하로 낮추세요.',
+          tip: '💡 속력은 그대로여도 멈추는 시간을 늘리면 평균 힘은 작아집니다.',
+          settings: { planet: 'earth', height: 20, mass: 400, vx: 0, system: 'rigid' },
+          criteria: [
+            { text: '천체: 지구 · 높이: 20 m · 질량: 400 kg', test: r => r.planet === 'earth' && r.height === 20 && r.mass === 400 },
+            { text: '추정 최대 충격력 35 kN 이하', test: r => r.peakForce <= 35000 },
+            { text: '가설을 선택하고 실험 실행', test: () => !!state.hypothesis }
+          ]
+        },
+        2: {
+          title: '달 기지 긴급 보급', label: 'MISSION 02 · 달 남극',
+          description: '800 kg 보급선을 50 m 높이에서 안전하게 착륙시키세요. 추정 최대 충격력은 20 kN 이하, 예산은 450 이하입니다.',
+          tip: '💡 달의 중력은 작지만 질량이 큰 보급선은 운동량이 큽니다.',
+          settings: { planet: 'moon', height: 50, mass: 800, vx: 0, system: 'rigid' },
+          criteria: [
+            { text: '천체: 달 · 높이: 50 m · 질량: 800 kg', test: r => r.planet === 'moon' && r.height === 50 && r.mass === 800 },
+            { text: '추정 최대 충격력 20 kN 이하', test: r => r.peakForce <= 20000 },
+            { text: '안전장치 예산 450 이하', test: r => r.cost <= 450 }
+          ]
+        },
+        3: {
+          title: '화성 최종 도전', label: 'MISSION 03 · 화성 기지',
+          description: '1,200 kg 유인선을 80 m 높이에서 착륙시키세요. 추정 최대 충격력은 45 kN 이하이며 수평 속력도 제거해야 합니다.',
+          tip: '💡 완충재만으로 부족하다면 충돌 전에 속력 자체를 줄여야 합니다.',
+          settings: { planet: 'mars', height: 80, mass: 1200, vx: 8, system: 'rigid' },
+          criteria: [
+            { text: '천체: 화성 · 높이: 80 m · 질량: 1,200 kg · 수평 속력: 8 m/s', test: r => r.planet === 'mars' && r.height === 80 && r.mass === 1200 && r.vx === 8 },
+            { text: '추정 최대 충격력 45 kN 이하', test: r => r.peakForce <= 45000 },
+            { text: '역추진 엔진으로 수평·수직 속력 감소', test: r => r.system === 'retro' }
+          ]
+        }
+      };
+
+      const state = {
+        planet: 'earth', height: 20, mass: 400, vx: 0, system: 'rigid',
+        hypothesis: null, mission: null, completed: new Set(), records: [],
+        running: false, lastResult: null, animationId: null, changed: false,
+        compareSelection: []
+      };
+
+      const $ = id => document.getElementById(id);
+      const els = {
+        simCanvas: $('simCanvas'), speedChart: $('speedChart'), forceChart: $('forceChart'),
+        heightRange: $('heightRange'), massRange: $('massRange'), vxRange: $('vxRange'),
+        launchBtn: $('launchBtn'), resultBanner: $('resultBanner'), liveDot: $('liveDot'),
+        teacherDialog: $('teacherDialog'), toast: $('toast')
+      };
+
+      const fmt = (n, d = 1) => Number(n).toLocaleString('ko-KR', { maximumFractionDigits: d, minimumFractionDigits: d });
+      const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+
+      function rangeFill(input) {
+        const pct = ((input.value - input.min) / (input.max - input.min)) * 100;
+        input.style.setProperty('--fill', `${pct}%`);
+      }
+
+      function calculateResult(snapshot = state) {
+        const planet = PLANETS[snapshot.planet];
+        const system = SYSTEMS[snapshot.system];
+        const t = Math.sqrt((2 * snapshot.height) / planet.g);
+        const vy = planet.g * t;
+        const rawSpeed = Math.hypot(vy, snapshot.vx);
+        const impactSpeed = rawSpeed * system.speedFactor;
+        const horizontalDistance = snapshot.vx * t;
+        const momentum = snapshot.mass * impactSpeed;
+        const impulse = momentum;
+        const avgForce = impulse / system.stop;
+        const peakForce = avgForce * system.peakFactor;
+        const decel = avgForce / snapshot.mass;
+        const safe = peakForce <= 45000;
+        return {
+          planet: snapshot.planet, height: +snapshot.height, mass: +snapshot.mass, vx: +snapshot.vx,
+          system: snapshot.system, g: planet.g, fallTime: t, verticalSpeed: vy, rawSpeed,
+          impactSpeed, horizontalDistance, momentum, impulse, avgForce, peakForce,
+          decel, stopTime: system.stop, cost: system.cost, safe,
+          timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        };
+      }
+
+      function updateControls(markChanged = true) {
+        const planet = PLANETS[state.planet];
+        const system = SYSTEMS[state.system];
+        $('gravityValue').textContent = `${planet.g.toFixed(2)} m/s²`;
+        $('heightValue').textContent = `${state.height} m`;
+        $('massValue').textContent = `${state.mass.toLocaleString()} kg`;
+        $('vxValue').textContent = `${state.vx} m/s`;
+        $('systemValue').textContent = `₩${system.cost}`;
+        $('sceneBadge').textContent = `${planet.icon} ${planet.name} · g = ${planet.g.toFixed(2)} m/s²`;
+        $('liveHeight').textContent = `${Number(state.height).toFixed(1)} m`;
+        $('liveSpeed').textContent = '0.0 m/s';
+        $('liveTime').textContent = '0.00 s';
+        $('liveX').textContent = '0.0 m';
+
+        document.querySelectorAll('.planet-btn').forEach(b => b.classList.toggle('active', b.dataset.planet === state.planet));
+        document.querySelectorAll('.system-option').forEach(b => b.classList.toggle('active', b.dataset.system === state.system));
+        els.heightRange.value = state.height;
+        els.massRange.value = state.mass;
+        els.vxRange.value = state.vx;
+        [els.heightRange, els.massRange, els.vxRange].forEach(rangeFill);
+        if (markChanged) {
+          state.changed = true;
+          markInquiry('control');
+          if (state.lastResult) setReadyBanner('변인이 변경되었습니다', '새 조건으로 다시 실험하여 결과를 비교하세요.');
+        }
+        drawScene(0, false);
+        updateMissionCriteria(state.lastResult);
+      }
+
+      function setReadyBanner(title, subtitle) {
+        els.resultBanner.className = 'result-banner ready';
+        $('resultIcon').textContent = '⌁';
+        $('resultTitle').textContent = title;
+        $('resultSubtitle').textContent = subtitle;
+        $('scoreValue').textContent = '—';
+      }
+
+      function selectMission(id) {
+        const mission = MISSIONS[id];
+        state.mission = Number(id);
+        Object.assign(state, mission.settings);
+        state.lastResult = null;
+        document.querySelectorAll('.mission-card').forEach(card => card.classList.toggle('active', Number(card.dataset.mission) === state.mission));
+        $('missionSummary').textContent = `${mission.title}: 조건을 만족하는 착륙 장치를 설계하세요.`;
+        $('missionLabel').textContent = mission.label;
+        $('missionTitle').textContent = mission.title;
+        $('missionDescription').textContent = mission.description;
+        $('missionTip').textContent = mission.tip;
+        switchTab('missionPage');
+        clearMetrics();
+        updateControls(false);
+        updateMissionCriteria(null);
+        setReadyBanner('미션 조건 불러오기 완료', mission.description);
+        showToast(`${mission.title} 미션을 시작합니다.`);
+      }
+
+      function updateMissionCriteria(result) {
+        const list = $('criteriaList');
+        list.innerHTML = '';
+        if (!state.mission) {
+          ['가설을 먼저 선택한다.', '변인을 조작하고 착륙 실험을 실행한다.', '측정값과 그래프를 근거로 결과를 설명한다.'].forEach((text, i) => {
+            const li = document.createElement('li'); li.textContent = text;
+            if ((i === 0 && state.hypothesis) || (i > 0 && state.lastResult)) li.classList.add('ok');
+            list.appendChild(li);
+          });
+          return;
+        }
+        MISSIONS[state.mission].criteria.forEach(c => {
+          const li = document.createElement('li'); li.textContent = c.text;
+          if (result) li.classList.add(c.test(result) ? 'ok' : 'fail');
+          list.appendChild(li);
+        });
+      }
+
+      function missionSuccess(result) {
+        if (!state.mission) return false;
+        return MISSIONS[state.mission].criteria.every(c => c.test(result));
+      }
+
+      function scoreResult(r) {
+        if (missionSuccess(r)) {
+          const limits = { 1: 35000, 2: 20000, 3: 45000 };
+          const margin = clamp((limits[state.mission] - r.peakForce) / limits[state.mission], 0, 1);
+          return Math.round(88 + margin * 10);
+        }
+        const forceScore = clamp(100 - (r.peakForce / 1000 - 12) * 1.15, 10, 100);
+        const costPenalty = r.cost * .045;
+        const precisionBonus = r.system === 'rigid' && r.safe ? 12 : 0;
+        return Math.round(clamp(forceScore - costPenalty + precisionBonus, 0, 100));
+      }
+
+      function runExperiment() {
+        if (state.running) return;
+        if (!state.hypothesis) {
+          showToast('먼저 충격력에 대한 가설을 선택해 주세요.');
+          document.querySelector('.hypothesis').animate([{ transform: 'translateX(-4px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(0)' }], { duration: 260 });
+          return;
+        }
+        state.running = true;
+        state.changed = false;
+        const result = calculateResult();
+        els.launchBtn.disabled = true;
+        els.launchBtn.textContent = '실험 진행 중…';
+        els.liveDot.classList.add('running');
+        $('simState').textContent = '측정 중';
+        setReadyBanner('탐사선 하강 중', '센서가 위치와 속력 데이터를 수집하고 있습니다.');
+
+        const duration = clamp(1500 + result.fallTime * 150, 1700, 3300);
+        const start = performance.now();
+        cancelAnimationFrame(state.animationId);
+        const frame = now => {
+          const progress = clamp((now - start) / duration, 0, 1);
+          const easedTime = progress;
+          drawScene(easedTime, true, result);
+          const physicalTime = result.fallTime * easedTime;
+          const y = .5 * result.g * physicalTime * physicalTime;
+          const h = Math.max(0, result.height - y);
+          const rawV = Math.hypot(result.g * physicalTime, result.vx);
+          const brakingProgress = result.system === 'retro' ? clamp((progress - .82) / .18, 0, 1) : 0;
+          const v = rawV * (1 - .65 * brakingProgress);
+          $('liveHeight').textContent = `${h.toFixed(1)} m`;
+          $('liveSpeed').textContent = `${v.toFixed(1)} m/s`;
+          $('liveTime').textContent = `${physicalTime.toFixed(2)} s`;
+          $('liveX').textContent = `${(result.vx * physicalTime).toFixed(1)} m`;
+          if (progress < 1) state.animationId = requestAnimationFrame(frame);
+          else finishExperiment(result);
+        };
+        state.animationId = requestAnimationFrame(frame);
+      }
+
+      function finishExperiment(result) {
+        state.running = false;
+        state.lastResult = result;
+        els.launchBtn.disabled = false;
+        els.launchBtn.textContent = '▶ 조건을 바꿔 다시 실험';
+        els.liveDot.classList.remove('running');
+        $('simState').textContent = '측정 완료';
+        $('liveSpeed').textContent = `${result.impactSpeed.toFixed(1)} m/s`;
+        $('liveHeight').textContent = '0.0 m';
+        $('liveTime').textContent = `${result.fallTime.toFixed(2)} s`;
+        $('liveX').textContent = `${result.horizontalDistance.toFixed(1)} m`;
+
+        const success = missionSuccess(result);
+        const resultState = success || (!state.mission && result.safe)
+          ? 'safe'
+          : (state.mission && result.safe ? 'warning' : 'danger');
+        result.mission = state.mission;
+        result.missionSuccess = success;
+        result.resultState = resultState;
+        els.resultBanner.className = `result-banner ${resultState}`;
+        $('resultIcon').textContent = resultState === 'safe' ? '✓' : (resultState === 'warning' ? '△' : '!');
+        $('resultTitle').textContent = success
+          ? '미션 성공!'
+          : (state.mission
+              ? (result.safe ? '착륙 성공 · 미션 기준 미달' : '화물 파손 위험 · 미션 실패')
+              : (result.safe ? '안전 착륙' : '화물 파손 위험'));
+        $('resultSubtitle').textContent = success
+          ? '모든 설계 조건을 만족했습니다. 측정값을 근거로 설계를 설명해 보세요.'
+          : (state.mission ? '오른쪽 미션 조건을 확인하고 설계를 수정하세요.' : '추정 최대 충격력이 45 kN을 넘지 않도록 설계를 개선하세요.');
+        $('scoreValue').textContent = `${scoreResult(result)}점`;
+
+        if (success) {
+          state.completed.add(state.mission);
+          document.querySelector(`.mission-card[data-mission="${state.mission}"]`).classList.add('completed');
+          updateProgress();
+          showToast('미션 성공! 증거와 과학 원리를 확인해 보세요.');
+        }
+
+        addRecord(result);
+        renderMetrics(result);
+        updateMissionCriteria(result);
+        markInquiry('measure'); markInquiry('explain');
+        switchTab('dataPage');
+      }
+
+      function renderMetrics(r) {
+        $('fallTimeMetric').textContent = `${r.fallTime.toFixed(2)} s`;
+        $('impactSpeedMetric').textContent = `${r.impactSpeed.toFixed(1)} m/s`;
+        $('momentumMetric').textContent = `${fmt(r.momentum, 0)} kg·m/s`;
+        $('forceMetric').textContent = `${fmt(r.peakForce / 1000, 1)} kN`;
+        const hypothesisCorrect = state.hypothesis === 'down';
+        $('claimTitle').textContent = `${hypothesisCorrect ? '가설과 일치' : '가설 수정 필요'} · 충돌 시간을 늘리면 충격력은 감소합니다.`;
+        $('claimText').textContent = `${PLANETS[r.planet].name}에서 ${r.height} m 낙하한 탐사선은 ${r.fallTime.toFixed(2)}초 후 충돌했습니다. ${SYSTEMS[r.system].name}의 정지 시간은 ${r.stopTime.toFixed(2)}초이며, 가정한 힘–시간 곡선에 따른 추정 최대 충격력은 ${(r.peakForce/1000).toFixed(1)} kN입니다. 같은 운동량 변화라면 멈추는 시간이 길수록 평균 힘은 작아집니다.`;
+        const speedFormula = r.vx > 0
+          ? `v<sub>y</sub> = √(2gh) = ${r.verticalSpeed.toFixed(2)} m/s<br>v = √(v<sub>x</sub>²+v<sub>y</sub>²) = ${r.rawSpeed.toFixed(2)} m/s`
+          : `v = √(2gh) = ${r.rawSpeed.toFixed(2)} m/s`;
+        const brakingFormula = r.system === 'retro' ? `<br>역추진 후 v = ${r.impactSpeed.toFixed(2)} m/s` : '';
+        $('formulaBox').innerHTML = `${speedFormula}${brakingFormula}<br>p = mv = ${fmt(r.momentum,0)} kg·m/s<br>F<sub>평균</sub> = Δp/Δt = ${fmt(r.avgForce/1000,1)} kN`;
+        drawSpeedChart(r);
+        drawForceChart(r);
+      }
+
+      function clearMetrics() {
+        ['fallTimeMetric','impactSpeedMetric','momentumMetric','forceMetric'].forEach(id => $(id).textContent = '—');
+        $('claimTitle').textContent = '실험 후 과학적 설명이 표시됩니다.';
+        $('claimText').textContent = '조작한 변인과 측정 결과를 연결하여 주장을 완성해 보세요.';
+        $('formulaBox').innerHTML = 'v = √(2gh)<br>FΔt = Δp';
+        drawEmptyChart(els.speedChart, '속력 (m/s)'); drawEmptyChart(els.forceChart, '힘 (kN)');
+      }
+
+      function fitCanvas(canvas) {
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        const rect = canvas.getBoundingClientRect();
+        const w = Math.max(1, Math.round(rect.width));
+        const h = Math.max(1, Math.round(rect.height));
+        if (canvas.width !== w * dpr || canvas.height !== h * dpr) { canvas.width = w * dpr; canvas.height = h * dpr; }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function drawScene(progress = 0, animating = false, result = calculateResult()) {
+        const { ctx, w, h } = fitCanvas(els.simCanvas);
+        const planet = PLANETS[state.planet];
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, planet.sky[0]); grad.addColorStop(1, planet.sky[1]);
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
+        drawStars(ctx, w, h, state.planet);
+
+        const groundY = h * .82;
+        const groundGrad = ctx.createLinearGradient(0, groundY, 0, h);
+        groundGrad.addColorStop(0, planet.ground[0]); groundGrad.addColorStop(1, planet.ground[1]);
+        ctx.fillStyle = groundGrad; ctx.beginPath(); ctx.moveTo(0, groundY);
+        for (let x = 0; x <= w; x += 35) ctx.lineTo(x, groundY + Math.sin(x * .027) * 6 + Math.sin(x * .009) * 7);
+        ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+        drawCrater(ctx, w * .18, groundY + 30, 50, state.planet);
+        drawCrater(ctx, w * .75, groundY + 42, 75, state.planet);
+
+        const padX = w * .62;
+        ctx.fillStyle = 'rgba(4,12,25,.55)'; ctx.fillRect(padX - 78, groundY + 3, 156, 13);
+        ctx.strokeStyle = planet.accent; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.ellipse(padX, groundY + 2, 70, 15, 0, 0, Math.PI * 2); ctx.stroke();
+        ctx.setLineDash([5, 6]); ctx.strokeStyle = 'rgba(255,255,255,.25)';
+        ctx.beginPath(); ctx.moveTo(padX, 34); ctx.lineTo(padX, groundY); ctx.stroke(); ctx.setLineDash([]);
+
+        let t = animating ? progress : 0;
+        const physicalT = result.fallTime * t;
+        const fracY = result.height ? (.5 * result.g * physicalT * physicalT) / result.height : 0;
+        const startY = h * .16;
+        const y = startY + (groundY - startY - 30) * clamp(fracY, 0, 1);
+        const maxX = Math.max(result.horizontalDistance, 1);
+        const xFrac = animating ? (result.vx * physicalT) / maxX : 0;
+        const startX = result.vx > 0 ? w * .28 : padX;
+        const x = result.vx > 0 ? startX + (padX - startX) * xFrac : padX;
+
+        if (animating && t > .05) {
+          ctx.setLineDash([4, 5]); ctx.strokeStyle = 'rgba(66,215,232,.48)'; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(startX, startY);
+          for (let i = 1; i <= 25; i++) {
+            const q = Math.min(t, i / 25);
+            const pt = result.fallTime * q;
+            const fy = (.5 * result.g * pt * pt) / result.height;
+            const px = result.vx > 0 ? startX + (padX - startX) * ((result.vx * pt) / maxX) : padX;
+            ctx.lineTo(px, startY + (groundY - startY - 30) * fy);
+          }
+          ctx.stroke(); ctx.setLineDash([]);
+        }
+
+        const retroActive = state.system === 'retro' && animating && t >= .82;
+        drawLander(ctx, x, y, state.system, animating && t > .97, retroActive);
+        drawRuler(ctx, w - 46, startY, groundY, state.height);
+
+        ctx.fillStyle = 'rgba(225,240,255,.68)'; ctx.font = '700 10px system-ui';
+        ctx.fillText(`${planet.name} 착륙 구역 A-17`, 16, h - 17);
+      }
+
+      function drawStars(ctx, w, h, planetKey) {
+        if (planetKey === 'earth') {
+          ctx.fillStyle = 'rgba(255,255,255,.13)';
+          for (let i=0;i<7;i++){ ctx.beginPath(); ctx.ellipse((i*137+42)%w, 70+(i%3)*35, 46, 10, 0, 0, Math.PI*2); ctx.fill(); }
+        } else {
+          for (let i = 0; i < 60; i++) {
+            const x = (i * 83 + 19) % w, y = (i * 47 + 13) % (h * .75);
+            const a = .25 + (i % 5) * .12; ctx.fillStyle = `rgba(255,255,255,${a})`; ctx.fillRect(x, y, i%9===0?2:1, i%9===0?2:1);
+          }
+        }
+      }
+
+      function drawCrater(ctx, x, y, r, planetKey) {
+        ctx.save(); ctx.scale(1, .28); ctx.beginPath(); ctx.arc(x, y / .28, r, 0, Math.PI * 2);
+        ctx.fillStyle = planetKey === 'earth' ? 'rgba(3,20,15,.22)' : 'rgba(20,8,8,.20)'; ctx.fill(); ctx.restore();
+      }
+
+      function drawLander(ctx, x, y, system, impact, retroActive = false) {
+        ctx.save(); ctx.translate(x, y);
+        if (system === 'retro' && retroActive && !impact) {
+          const flame = ctx.createLinearGradient(0, 22, 0, 56); flame.addColorStop(0,'#fff5a5'); flame.addColorStop(.45,'#ff9a3c'); flame.addColorStop(1,'rgba(255,70,40,0)');
+          ctx.fillStyle = flame; ctx.beginPath(); ctx.moveTo(-13,20); ctx.lineTo(-2,52+Math.random()*8); ctx.lineTo(7,20); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(8,20); ctx.lineTo(15,48+Math.random()*7); ctx.lineTo(19,20); ctx.fill();
+        }
+        if (system === 'airbag') {
+          ctx.fillStyle = '#d9f6ff'; ctx.strokeStyle = '#46bed8'; ctx.lineWidth = 2;
+          [-23, -8, 8, 23].forEach(dx => { ctx.beginPath(); ctx.arc(dx, 25, impact ? 13 : 9, 0, Math.PI*2); ctx.fill(); ctx.stroke(); });
+        }
+        ctx.strokeStyle = '#c9d8e8'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(-16, 14); ctx.lineTo(-28, 31); ctx.lineTo(-37, 31); ctx.moveTo(16, 14); ctx.lineTo(28,31); ctx.lineTo(37,31); ctx.stroke();
+        ctx.fillStyle = '#d9e5f0'; ctx.strokeStyle = '#6f8ba8'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(-24, -8); ctx.quadraticCurveTo(0,-31,24,-8); ctx.lineTo(19,18); ctx.lineTo(-19,18); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#203b5d'; ctx.fillRect(-17, -8, 34, 18);
+        ctx.fillStyle = '#66e0ec'; ctx.fillRect(-12, -4, 10, 7); ctx.fillRect(3, -4, 9, 7);
+        ctx.fillStyle = '#f2bb4b'; ctx.beginPath(); ctx.arc(0, 11, 3, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = '#b5c6d8'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0,-24); ctx.lineTo(0,-37); ctx.stroke();
+        ctx.fillStyle = '#ff6b6b'; ctx.beginPath(); ctx.arc(0,-39,3,0,Math.PI*2); ctx.fill();
+        if (system === 'spring') {
+          ctx.strokeStyle = '#f2bb4b'; ctx.lineWidth = 2;
+          [-20,0,20].forEach(dx => { ctx.beginPath(); ctx.moveTo(dx-5,20); ctx.lineTo(dx+5,24); ctx.lineTo(dx-5,28); ctx.lineTo(dx+5,32); ctx.stroke(); });
+        }
+        if (impact && system === 'rigid') {
+          ctx.strokeStyle = '#ff6b6b'; ctx.lineWidth = 2;
+          for(let i=0;i<8;i++){ const a=i*Math.PI/4; ctx.beginPath(); ctx.moveTo(Math.cos(a)*32,Math.sin(a)*22); ctx.lineTo(Math.cos(a)*49,Math.sin(a)*34); ctx.stroke(); }
+        }
+        ctx.restore();
+      }
+
+      function drawRuler(ctx, x, y1, y2, height) {
+        ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x,y1); ctx.lineTo(x,y2); ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.font = '9px system-ui';
+        for (let i=0;i<=4;i++){ const y=y1+(y2-y1)*i/4; ctx.beginPath();ctx.moveTo(x-5,y);ctx.lineTo(x+5,y);ctx.stroke();ctx.fillText(`${Math.round(height*(1-i/4))}m`,x-30,y+3); }
+      }
+
+      function drawEmptyChart(canvas, label) {
+        const { ctx, w, h } = fitCanvas(canvas); ctx.clearRect(0,0,w,h); ctx.fillStyle='#091d37';ctx.fillRect(0,0,w,h);
+        ctx.strokeStyle='#294767';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(34,12);ctx.lineTo(34,h-23);ctx.lineTo(w-10,h-23);ctx.stroke();
+        ctx.fillStyle='#7189a7';ctx.font='9px system-ui';ctx.fillText(label,6,10);ctx.fillText('실험 전',w/2-17,h/2);
+      }
+
+      function baseChart(canvas, yLabel, xLabel, yMax) {
+        const {ctx,w,h}=fitCanvas(canvas); ctx.clearRect(0,0,w,h);ctx.fillStyle='#091d37';ctx.fillRect(0,0,w,h);
+        const m={l:38,r:12,t:14,b:25};ctx.strokeStyle='#203c5b';ctx.lineWidth=1;
+        for(let i=0;i<=4;i++){const y=m.t+(h-m.t-m.b)*i/4;ctx.beginPath();ctx.moveTo(m.l,y);ctx.lineTo(w-m.r,y);ctx.stroke();ctx.fillStyle='#6f87a3';ctx.font='8px system-ui';ctx.fillText(fmt(yMax*(1-i/4),0),4,y+3);}
+        ctx.strokeStyle='#496987';ctx.beginPath();ctx.moveTo(m.l,m.t);ctx.lineTo(m.l,h-m.b);ctx.lineTo(w-m.r,h-m.b);ctx.stroke();
+        ctx.fillStyle='#879eb9';ctx.font='8px system-ui';ctx.fillText(yLabel,4,9);ctx.fillText(xLabel,w-47,h-7);
+        return {ctx,w,h,m};
+      }
+
+      function drawSpeedChart(r) {
+        const maxY=Math.max(5,r.rawSpeed*1.15);const {ctx,w,h,m}=baseChart(els.speedChart,'m/s','시간 (s)',maxY);
+        const x=t=>m.l+(w-m.l-m.r)*(t/r.fallTime), y=v=>h-m.b-(h-m.t-m.b)*(v/maxY);
+        ctx.strokeStyle='#42d7e8';ctx.lineWidth=3;ctx.beginPath();
+        for(let i=0;i<=50;i++){
+          const t=r.fallTime*i/50;
+          const progress=t/r.fallTime;
+          const rawV=Math.hypot(r.g*t,r.vx);
+          const brakingProgress=r.system==='retro'?clamp((progress-.82)/.18,0,1):0;
+          const v=rawV*(1-.65*brakingProgress);
+          if(i===0)ctx.moveTo(x(t),y(v));else ctx.lineTo(x(t),y(v));
+        }
+        ctx.stroke();
+        ctx.fillStyle='#f2bb4b';ctx.beginPath();ctx.arc(x(r.fallTime),y(r.impactSpeed),4,0,Math.PI*2);ctx.fill();
+        if(r.system==='retro'){
+          const startT=r.fallTime*.82;
+          const startV=Math.hypot(r.g*startT,r.vx);
+          ctx.strokeStyle='rgba(242,187,75,.75)';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(x(startT),y(startV));ctx.lineTo(x(startT),h-m.b);ctx.stroke();ctx.setLineDash([]);
+          ctx.fillStyle='#f2bb4b';ctx.font='8px system-ui';ctx.fillText('역추진',Math.min(w-48,x(startT)+4),Math.max(13,y(startV)-5));
+        }
+        ctx.fillStyle='#8399b5';ctx.font='8px system-ui';ctx.fillText('0',m.l-3,h-9);ctx.fillText(`${r.fallTime.toFixed(1)}`,w-m.r-14,h-9);
+      }
+
+      function drawForceChart(r) {
+        const maxY=Math.max(10,r.peakForce/1000*1.15);const {ctx,w,h,m}=baseChart(els.forceChart,'kN','충돌 시간',maxY);
+        const left=m.l+(w-m.l-m.r)*.16, right=w-m.r-(w-m.l-m.r)*.16, base=h-m.b, peakY=m.t+(h-m.t-m.b)*.12;
+        const span=right-left;
+        const rampFraction=1-(r.avgForce/r.peakForce);
+        const leftTop=left+span*rampFraction;
+        const rightTop=right-span*rampFraction;
+        const grad=ctx.createLinearGradient(0,peakY,0,base);grad.addColorStop(0,'rgba(255,107,107,.85)');grad.addColorStop(1,'rgba(255,107,107,.12)');
+        ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(left,base);ctx.lineTo(leftTop,peakY);ctx.lineTo(rightTop,peakY);ctx.lineTo(right,base);ctx.closePath();ctx.fill();
+        ctx.strokeStyle='#ff7777';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(left,base);ctx.lineTo(leftTop,peakY);ctx.lineTo(rightTop,peakY);ctx.lineTo(right,base);ctx.stroke();
+        ctx.fillStyle='#9aafc7';ctx.font='8px system-ui';ctx.fillText(`Δt = ${r.stopTime.toFixed(2)} s`,(left+right)/2-28,h-8);
+      }
+
+      function addRecord(r) {
+        state.records.unshift(r); state.records = state.records.slice(0,6); state.compareSelection=[]; renderRecords();
+      }
+
+      function renderRecords() {
+        const container=$('recordContainer');
+        if(!state.records.length){container.className='record-empty';container.innerHTML='아직 저장된 실험이 없습니다.<br>실험을 실행하면 최근 결과 6개가 자동 기록됩니다.';return;}
+        container.className='records';container.innerHTML='';
+        state.records.forEach((r,i)=>{
+          const recordState=r.resultState||(r.safe?'safe':'danger');
+          const statusText=r.mission?(r.missionSuccess?'미션 성공':(r.safe?'기준 미달':'위험')):(r.safe?'안전':'위험');
+          const b=document.createElement('button');b.type='button';b.className=`record ${recordState}`;b.dataset.index=i;
+          b.innerHTML=`<div class="record-top"><span>#${state.records.length-i} ${PLANETS[r.planet].icon} ${PLANETS[r.planet].name} · ${SYSTEMS[r.system].name}</span><span>${statusText}</span></div><div class="record-data">높이 ${r.height}m · 질량 ${r.mass}kg · 충돌 ${r.impactSpeed.toFixed(1)}m/s<br>추정 최대 힘 ${(r.peakForce/1000).toFixed(1)}kN · ${r.timestamp}</div>`;
+          b.addEventListener('click',()=>compareRecord(i,b));container.appendChild(b);
+        });
+        $('compareNote').hidden=false;$('compareNote').textContent='두 실험을 비교하려면 기록을 차례로 선택하세요.';
+      }
+
+      function compareRecord(index,button){
+        const pos=state.compareSelection.indexOf(index);if(pos>=0)state.compareSelection.splice(pos,1);else{if(state.compareSelection.length===2)state.compareSelection.shift();state.compareSelection.push(index);}
+        document.querySelectorAll('.record').forEach((b,i)=>b.style.borderColor=state.compareSelection.includes(i)?'#a78bfa':'');
+        if(state.compareSelection.length===2){const [a,b]=state.compareSelection.map(i=>state.records[i]);const ratio=b.peakForce/a.peakForce;
+          $('compareNote').innerHTML=`<b>비교 결과</b><br>${SYSTEMS[a.system].name} → ${SYSTEMS[b.system].name}: 추정 최대 충격력이 ${Math.abs((1-ratio)*100).toFixed(1)}% ${ratio<1?'감소':'증가'}했습니다.<br><span style="color:#a8b8cf">다른 변인도 같았는지 확인하세요.</span>`;
+        }else $('compareNote').textContent=`${state.compareSelection.length}/2개 선택 · 비교할 기록을 하나 더 선택하세요.`;
+      }
+
+      function updateProgress(){
+        const n=state.completed.size;$('progressRing').style.setProperty('--progress',(n/3)*100);$('progressText').textContent=`${n}/3`;
+      }
+      function markInquiry(step){const el=document.querySelector(`.inquiry-step[data-step="${step}"]`);if(el)el.classList.add('done');}
+      function switchTab(id){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('.tab-page').forEach(p=>p.classList.toggle('active',p.id===id));requestAnimationFrame(()=>{if(id==='dataPage'&&state.lastResult){drawSpeedChart(state.lastResult);drawForceChart(state.lastResult);}});}
+      function showToast(message){els.toast.textContent=message;els.toast.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>els.toast.classList.remove('show'),2600);}
+
+      function resetLab(){
+        cancelAnimationFrame(state.animationId);Object.assign(state,{planet:'earth',height:20,mass:400,vx:0,system:'rigid',hypothesis:null,mission:null,running:false,lastResult:null,changed:false,compareSelection:[]});
+        document.querySelectorAll('.choice,.mission-card').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.inquiry-step').forEach((x,i)=>x.classList.toggle('done',i===0));
+        $('missionSummary').textContent='미션을 선택하거나 자유 탐구를 시작하세요.';$('missionLabel').textContent='FREE LAB';$('missionTitle').textContent='자유 탐구 모드';$('missionDescription').textContent='변인을 하나씩 바꾸면서 낙하 운동과 충격력의 변화를 관찰하세요.';$('missionTip').textContent='💡 동일한 조건에서 질량만 바꾸면 무엇이 같고 무엇이 달라질까요?';
+        els.launchBtn.disabled=false;els.launchBtn.textContent='▶ 착륙 실험 시작';els.liveDot.classList.remove('running');$('simState').textContent='대기 중';
+        updateControls(false);clearMetrics();updateMissionCriteria(null);setReadyBanner('실험 준비 완료','가설을 정하고 변수를 조작한 뒤 실험을 시작하세요.');switchTab('dataPage');showToast('실험 조건을 초기화했습니다.');
+      }
+
+      function randomize(){
+        state.mission=null;state.planet=['earth','moon','mars'][Math.floor(Math.random()*3)];state.height=Math.ceil((5+Math.random()*95)/5)*5;state.mass=Math.ceil((100+Math.random()*1100)/50)*50;state.vx=Math.floor(Math.random()*13);state.system=['rigid','airbag','spring','retro'][Math.floor(Math.random()*4)];
+        document.querySelectorAll('.mission-card').forEach(c=>c.classList.remove('active'));$('missionSummary').textContent='무작위 조건: 결과를 먼저 예상한 뒤 실험하세요.';$('missionLabel').textContent='RANDOM CHALLENGE';$('missionTitle').textContent='무작위 탐구 조건';$('missionDescription').textContent='주어진 조건에서 착륙 결과를 예상하고, 안전장치를 바꾸어 개선하세요.';$('missionTip').textContent='💡 한 번에 하나의 변인만 바꾸어 전후 기록을 비교하세요.';updateControls();updateMissionCriteria(null);showToast('무작위 실험 조건을 생성했습니다.');
+      }
+
+      document.querySelectorAll('.planet-btn').forEach(b=>b.addEventListener('click',()=>{state.planet=b.dataset.planet;updateControls();}));
+      document.querySelectorAll('.system-option').forEach(b=>b.addEventListener('click',()=>{state.system=b.dataset.system;updateControls();}));
+      document.querySelectorAll('.choice').forEach(b=>b.addEventListener('click',()=>{state.hypothesis=b.dataset.choice;document.querySelectorAll('.choice').forEach(x=>x.classList.toggle('active',x===b));markInquiry('hypothesis');updateMissionCriteria(state.lastResult);showToast('가설을 기록했습니다. 이제 실험으로 확인하세요.');}));
+      document.querySelectorAll('.mission-card').forEach(b=>b.addEventListener('click',()=>selectMission(b.dataset.mission)));
+      document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+      els.heightRange.addEventListener('input',e=>{state.height=+e.target.value;updateControls();});
+      els.massRange.addEventListener('input',e=>{state.mass=+e.target.value;updateControls();});
+      els.vxRange.addEventListener('input',e=>{state.vx=+e.target.value;updateControls();});
+      els.launchBtn.addEventListener('click',runExperiment);
+      $('randomBtn').addEventListener('click',randomize);$('resetBtn').addEventListener('click',resetLab);
+      $('teacherBtn').addEventListener('click',()=>els.teacherDialog.showModal());$('standardBtn').addEventListener('click',()=>els.teacherDialog.showModal());$('closeDialogBtn').addEventListener('click',()=>els.teacherDialog.close());
+      els.teacherDialog.addEventListener('click',e=>{if(e.target===els.teacherDialog)els.teacherDialog.close();});
+      $('fullscreenBtn').addEventListener('click',async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen();}catch{showToast('브라우저에서 전체 화면을 허용하지 않았습니다.');}});
+      window.addEventListener('resize',()=>{drawScene(0,false,state.lastResult||calculateResult());if(state.lastResult){drawSpeedChart(state.lastResult);drawForceChart(state.lastResult);}else{drawEmptyChart(els.speedChart,'속력 (m/s)');drawEmptyChart(els.forceChart,'힘 (kN)');}});
+      document.addEventListener('keydown',e=>{if(e.code==='Space'&&!['INPUT','BUTTON'].includes(document.activeElement.tagName)){e.preventDefault();runExperiment();}});
+
+      updateControls(false);clearMetrics();updateMissionCriteria(null);renderRecords();
+    })();
+  </script>
+</body>
+</html>
